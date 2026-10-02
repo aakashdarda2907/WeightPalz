@@ -1,0 +1,108 @@
+{% extends 'base.html' %}
+
+{% block title %}Stats – WeightPalz{% endblock %}
+
+{% block content %}
+<div class="app">
+  <h2>Stats</h2>
+
+  <div class="card">
+    <div class="monthbar">
+      <a href="?m={{ prev_month }}" aria-label="Previous month">‹</a>
+      <h3>{{ month_label }}</h3>
+      <a href="?m={{ next_month }}" class="{% if not has_next %}off{% endif %}" aria-label="Next month">›</a>
+    </div>
+
+    <div class="cal">
+      {% for h in 'MTWTFSS' %}<div class="h">{{ h }}</div>{% endfor %}
+      {% for week in weeks %}
+        {% for d in week %}
+          <div class="day {% if not d.in_month %}out{% endif %} {% if d.is_today %}t{% endif %}">
+            <em>{{ d.date.day }}</em>
+            <strong>{% if d.weight %}{{ d.weight }}{% else %}–{% endif %}</strong>
+            <div class="dots">{% for on in d.dots %}<i class="{% if on %}on{% endif %}"></i>{% endfor %}</div>
+          </div>
+        {% endfor %}
+      {% endfor %}
+    </div>
+    <p class="mut" style="margin-top:10px">Weight in kg. Dots show meal goals done.</p>
+  </div>
+
+  <div class="card chart">
+    <h3 style="margin-bottom:10px">Trends · last 21 days</h3>
+    <div class="chips" id="chart-chips">
+      <button type="button" class="chip on" data-k="w">Weight</button>
+      <button type="button" class="chip" data-k="c">Calories</button>
+      <button type="button" class="chip" data-k="m">Meals</button>
+      <button type="button" class="chip" data-k="wc">Weight × cal</button>
+      <button type="button" class="chip" data-k="mc">Meals × cal</button>
+    </div>
+    <svg id="chart-svg" viewBox="0 0 350 125" role="img" aria-label="Trend chart for the last 21 days"></svg>
+    <div class="legend" id="chart-legend"></div>
+  </div>
+</div>
+
+{{ chart_data|json_script:"chart-data" }}
+{% endblock %}
+
+{% block scripts %}
+<script>
+(function () {
+  var D = JSON.parse(document.getElementById('chart-data').textContent);
+  var MODES = {
+    w:  [['Weight', D.weight, 'g'], ['7-day average', D.avg, 'tx']],
+    c:  [['Calories', D.calories, 'y']],
+    m:  [['Meals done', D.meals, 'b']],
+    wc: [['Weight', D.weight, 'g'], ['Calories', D.calories, 'y']],
+    mc: [['Meals done', D.meals, 'b'], ['Calories', D.calories, 'y']]
+  };
+  var svg = document.getElementById('chart-svg');
+  var legend = document.getElementById('chart-legend');
+  var chips = document.querySelectorAll('#chart-chips .chip');
+
+  function draw(key) {
+    var n = D.labels.length, html = '', legendHtml = '', any = false;
+
+    MODES[key].forEach(function (s, idx) {
+      var vals = s[1];
+      var found = vals.filter(function (v) { return v !== null; });
+      legendHtml += '<span style="color:var(--' + s[2] + ')">● ' + s[0] + '</span>';
+      if (!found.length) return;
+      any = true;
+
+      var lo = Math.min.apply(null, found), hi = Math.max.apply(null, found);
+      var range = (hi - lo) || 1, path = '', dots = '', pen = false;
+
+      vals.forEach(function (v, i) {
+        if (v === null) { pen = false; return; }
+        var x = 10 + i * (330 / (n - 1));
+        var y = 110 - (v - lo) / range * 95;
+        path += (pen ? 'L' : 'M') + x.toFixed(1) + ' ' + y.toFixed(1);
+        pen = true;
+        if (idx === 0) dots += '<circle cx="' + x.toFixed(1) + '" cy="' + y.toFixed(1) + '" r="3" style="fill:var(--' + s[2] + ')"/>';
+      });
+
+      html += '<path d="' + path + '" fill="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="stroke:var(--' + s[2] + ')"/>' + dots;
+    });
+
+    if (any) {
+      html += '<text x="10" y="123">' + D.labels[0] + '</text>';
+      html += '<text x="340" y="123" text-anchor="end">' + D.labels[n - 1] + '</text>';
+    } else {
+      html = '<text x="175" y="62" text-anchor="middle">Log a few days to see this chart</text>';
+    }
+    svg.innerHTML = html;
+    legend.innerHTML = legendHtml;
+  }
+
+  chips.forEach(function (chip) {
+    chip.addEventListener('click', function () {
+      chips.forEach(function (c) { c.classList.remove('on'); });
+      chip.classList.add('on');
+      draw(chip.dataset.k);
+    });
+  });
+  draw('w');
+})();
+</script>
+{% endblock %}

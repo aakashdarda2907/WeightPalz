@@ -1,0 +1,36 @@
+{% if active %}
+  {# App pages: bottom navigation bar. Each page passes `active` from its view. #}
+  <nav class="tabs" aria-label="Main">
+    <a href="{% url 'home' %}" class="{% if active == 'home' %}on{% endif %}">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg>Home
+    </a>
+    <a href="{% url 'stats' %}" class="{% if active == 'stats' %}on{% endif %}">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 20V10M12 20V4M19 20v-7"/></svg>Stats
+    </a>
+    <a href="{% url 'friends' %}" class="{% if active == 'friends' %}on{% endif %}">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.5-4 3.2-6 6.5-6s6 2 6.5 6"/><path d="M16 4.6a3.5 3.5 0 010 6.8M18 14.3c2 .7 3.2 2.6 3.5 5.7"/></svg>Friends
+    </a>
+    <a href="{% url 'calories' %}" class="{% if active == 'calories' %}on{% endif %}">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3v6a3 3 0 006 0V3M9 12v9"/><path d="M17 3c-2 2-3 5-3 8h3v10"/></svg>Calories
+    </a>
+    <a href="{% url 'profile' %}" class="{% if active == 'profile' %}on{% endif %}">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1-4.5 4-6.5 8-6.5s7 2 8 6.5"/></svg>Profile
+    </a>
+  </nav>
+{% else %}
+  {# Public pages: top bar #}
+  <header class="nav">
+    <a class="logo" href="{% url 'landing' %}">Weight<i>Palz</i></a>
+    <div class="row">
+      {% if user.is_authenticated %}
+        <form method="post" action="{% url 'logout' %}">
+          {% csrf_token %}
+          <button class="btn ghost" type="submit">Log out</button>
+        </form>
+      {% else %}
+        <a class="btn ghost" href="{% url 'login' %}">Log in</a>
+        <a class="btn" href="{% url 'signup' %}">Sign up</a>
+      {% endif %}
+    </div>
+  </header>
+{% endif %}

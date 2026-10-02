@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+
+{% block title %}Calories – WeightPalz{% endblock %}
+
+{% block content %}
+<div class="app">
+  <h2 style="margin-bottom:4px">Calories</h2>
+  <p class="mut" style="margin-bottom:14px">Optional. This log never affects your targets or goals.</p>
+
+  <div class="card">
+    <p class="mut">Today</p>
+    <div class="big">{{ total_today }} <span class="mut">kcal</span></div>
+
+    <form method="post" action="{% url 'add_calorie' %}" style="margin-top:14px">
+      {% csrf_token %}
+      <div class="in">
+        <input class="input" style="flex:2" type="text" name="name" placeholder="What did you eat?" aria-label="What did you eat" maxlength="100" required>
+        <input class="input" style="flex:1" type="number" name="kcal" placeholder="kcal" aria-label="Calories" min="1" max="10000" required>
+      </div>
+      <button class="btn block" type="submit">Add entry</button>
+    </form>
+  </div>
+
+  <div class="card">
+    <h3>Today's entries</h3>
+    {% for e in entries %}
+      <div class="li">
+        <div class="g">{{ e.name }}</div>
+        <b>{{ e.kcal }}</b>
+        <form method="post" action="{% url 'delete_calorie' e.pk %}">
+          {% csrf_token %}
+          <button class="sm" type="submit" aria-label="Delete {{ e.name }}">✕</button>
+        </form>
+      </div>
+    {% empty %}
+      <p class="mut" style="margin-top:8px">Nothing logged today.</p>
+    {% endfor %}
+  </div>
+
+  <div class="card">
+    <h3>History</h3>
+    {% for h in history %}
+      <div class="li">
+        <div class="g">{{ h.date|date:"D, d M" }}</div>
+        <b>{{ h.total }} kcal</b>
+      </div>
+    {% empty %}
+      <p class="mut" style="margin-top:8px">No history yet.</p>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

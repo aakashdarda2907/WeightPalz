@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+{% block title %}Your goal – WeightPalz{% endblock %}
+
+{% block content %}
+<div class="auth">
+  <h2>Your goal</h2>
+  <p class="mut">You can change this later in Profile.</p>
+
+  <form method="post">
+    {% csrf_token %}
+
+    <div class="chips">
+      <input type="radio" name="goal" id="goal-gain" value="gain" {% if goal == 'gain' %}checked{% endif %}>
+      <label class="chip" for="goal-gain">Gain weight</label>
+      <input type="radio" name="goal" id="goal-lose" value="lose" {% if goal == 'lose' %}checked{% endif %}>
+      <label class="chip" for="goal-lose">Lose weight</label>
+    </div>
+
+    <input class="input" type="number" step="0.1" name="current_weight" placeholder="Current weight (kg)"
+           aria-label="Current weight in kg" value="{{ form_current|default:'' }}" required>
+    <input class="input" type="number" step="0.1" name="desired_weight" placeholder="Desired weight (kg)"
+           aria-label="Desired weight in kg" value="{{ form_desired|default:'' }}" required>
+
+    <button class="btn block" type="submit">Start tracking</button>
+  </form>
+</div>
+{% endblock %}

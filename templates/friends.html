@@ -1,0 +1,112 @@
+{% extends 'base.html' %}
+
+{% block title %}Friends – WeightPalz{% endblock %}
+
+{% block content %}
+<div class="app">
+  <h2>Friends</h2>
+
+  <div class="chips">
+    <a class="chip {% if tab == 'friends' %}on{% endif %}" href="?tab=friends">Friends</a>
+    <a class="chip {% if tab == 'compete' %}on{% endif %}" href="?tab=compete">Compete</a>
+  </div>
+
+  {% if tab == 'friends' %}
+
+    <div class="card">
+      <form class="search" method="get">
+        <input type="hidden" name="tab" value="friends">
+        <input class="input" type="search" name="q" value="{{ q }}" placeholder="Search by name or exact email" aria-label="Search users">
+        <button class="btn" type="submit">Search</button>
+      </form>
+
+      {% if q %}
+        {% for r in results %}
+          <div class="li">
+            <div class="av {% cycle 'c1' 'c2' 'c3' 'c4' 'c5' 'c6' as rc %}">{{ r.initial }}</div>
+            <div class="g"><b>{{ r.name }}</b></div>
+            {% if r.state == 'none' or r.state == 'incoming' %}
+              <form method="post" action="{% url 'send_request' r.user.id %}">
+                {% csrf_token %}
+                <button class="sm on" type="submit">{% if r.state == 'incoming' %}Accept{% else %}Add{% endif %}</button>
+              </form>
+            {% elif r.state == 'requested' %}
+              <span class="sm static">Requested</span>
+            {% else %}
+              <span class="sm static">Friends ✓</span>
+            {% endif %}
+          </div>
+        {% empty %}
+          <p class="mut" style="margin-top:10px">No users found.</p>
+        {% endfor %}
+      {% endif %}
+    </div>
+
+    {% if incoming %}
+      <div class="card">
+        <h3>Requests</h3>
+        {% for req in incoming %}
+          <div class="li">
+            <div class="av c2">{{ req.from_user.first_name|default:'M'|slice:":1"|upper }}</div>
+            <div class="g"><b>{{ req.from_user.first_name|default:'Member' }}</b><p class="mut">wants to join your group</p></div>
+            <form method="post" action="{% url 'respond_request' req.pk 'accept' %}">
+              {% csrf_token %}<button class="sm on" type="submit">Accept</button>
+            </form>
+            <form method="post" action="{% url 'respond_request' req.pk 'decline' %}">
+              {% csrf_token %}<button class="sm" type="submit" aria-label="Decline">✕</button>
+            </form>
+          </div>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    <div class="card">
+      <h3>Your group</h3>
+      {% for f in friends %}
+        <div class="li">
+          <div class="av {% cycle 'c1' 'c2' 'c3' 'c4' 'c5' 'c6' %}">{{ f.initial }}</div>
+          <div class="g">
+            <b>{{ f.name }}</b>
+            <p class="mut">{{ f.streak }} day streak · {{ f.done }}/4 today</p>
+            <div class="dots lg left">{% for on in f.dots %}<i class="{% if on %}on{% endif %}"></i>{% endfor %}</div>
+          </div>
+          <form method="post" action="{% url 'cheer_friend' f.user.id %}">
+            {% csrf_token %}
+            {% if f.cheered %}
+              <button class="sm on" type="button" disabled>Cheered ✓</button>
+            {% else %}
+              <button class="sm" type="submit">♥ Cheer</button>
+            {% endif %}
+          </form>
+          <form method="post" action="{% url 'remove_friend' f.user.id %}"
+                onsubmit="return confirm('Remove {{ f.name|escapejs }} from your group?');">
+            {% csrf_token %}
+            <button class="sm" type="submit" aria-label="Remove {{ f.name }}">✕</button>
+          </form>
+        </div>
+      {% empty %}
+        <p class="mut" style="margin-top:8px">No friends yet. Search above to add some.</p>
+      {% endfor %}
+    </div>
+
+  {% else %}
+
+    <div class="card">
+      <h3>This week's leaderboard</h3>
+      <p class="mut">Ranked by meals completed in the last 7 days (max 28). Not by kilos.</p>
+      {% for r in board %}
+        <div class="li">
+          <div class="rank">{{ r.rank }}</div>
+          <div class="av {% cycle 'c1' 'c2' 'c3' 'c4' 'c5' 'c6' %}">{{ r.initial }}</div>
+          <div class="g"><b class="{% if r.is_me %}me{% endif %}">{{ r.name }}</b></div>
+          <b>{{ r.score }}</b>
+        </div>
+      {% endfor %}
+      {% if board|length == 1 %}
+        <p class="mut" style="margin-top:10px">Add friends to start competing.</p>
+      {% endif %}
+    </div>
+
+  {% endif %}
+</div>
+{% endblock %}

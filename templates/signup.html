@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block title %}Sign up – WeightPalz{% endblock %}
+
+{% block content %}
+<div class="auth">
+  <h2>Create your account</h2>
+  <p class="mut">Takes under a minute.</p>
+
+  <form method="post">
+    {% csrf_token %}
+    <input class="input" type="text" name="name" placeholder="Your name" aria-label="Your name"
+           value="{{ form_name|default:'' }}" autocomplete="given-name" required>
+    <input class="input" type="email" name="email" placeholder="Email" aria-label="Email"
+           value="{{ form_email|default:'' }}" autocomplete="email" required>
+    <input class="input" type="password" name="password" placeholder="Password (6+ characters)" aria-label="Password"
+           autocomplete="new-password" required>
+    <button class="btn block" type="submit">Sign up</button>
+  </form>
+
+  <p class="mut center">Have an account? <a class="link" href="{% url 'login' %}">Log in</a></p>
+</div>
+{% endblock %}

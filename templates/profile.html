@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+
+{% block title %}Profile – WeightPalz{% endblock %}
+
+{% block content %}
+<div class="app">
+  <h2>Profile</h2>
+
+  <div class="card">
+    <div class="li">
+      <div class="av c5">{{ profile.display_name|slice:":1"|upper }}</div>
+      <div class="g">
+        <b>{{ profile.display_name }}</b>
+        <p class="mut">{% if profile.goal == 'gain' %}Gaining{% else %}Losing{% endif %} weight</p>
+      </div>
+    </div>
+    <div class="li"><div class="g">Starting weight</div><b>{{ profile.start_weight }} kg</b></div>
+    <div class="li"><div class="g">Current weight</div><b>{{ profile.latest_weight }} kg</b></div>
+    <div class="li"><div class="g">Desired weight</div><b>{{ profile.target_weight }} kg</b></div>
+  </div>
+
+  <div class="card">
+    <h3>Edit goal</h3>
+    <form method="post">
+      {% csrf_token %}
+      <div class="chips">
+        <input type="radio" name="goal" id="pgoal-gain" value="gain" {% if profile.goal == 'gain' %}checked{% endif %}>
+        <label class="chip" for="pgoal-gain">Gain weight</label>
+        <input type="radio" name="goal" id="pgoal-lose" value="lose" {% if profile.goal == 'lose' %}checked{% endif %}>
+        <label class="chip" for="pgoal-lose">Lose weight</label>
+      </div>
+
+      <div class="field">
+        <label for="target_weight">Desired weight (kg)</label>
+        <input class="input" id="target_weight" type="number" step="0.1" name="target_weight" value="{{ profile.target_weight }}" required>
+      </div>
+      <div class="field">
+        <label for="reminder_time">Daily weight reminder</label>
+        <input class="input" id="reminder_time" type="time" name="reminder_time" value="{{ reminder_value }}" required>
+      </div>
+
+      <button class="btn block" type="submit">Save changes</button>
+    </form>
+  </div>
+
+  <div class="stack">
+    <form method="post" action="{% url 'logout' %}">
+      {% csrf_token %}
+      <button class="btn ghost" type="submit">Log out</button>
+    </form>
+  </div>
+
+  <p class="mut" style="margin-top:16px">WeightPalz is not medical advice. For health goals, talk to a professional.</p>
+</div>
+{% endblock %}
