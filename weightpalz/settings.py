@@ -11,7 +11,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Security
 # ---------------------------------------------------------------------------
 # Keep the key Django generated for you in the original file.
-SECRET_KEY = 'django-insecure-+8htoxnja3=5v2c6b*lbhr&dm@)@cb(y1-f(--#568=&g(**6m'
+SECRET_KEY = '&r1swbewf5ynh#6y@6zxsnd=h++hb5@1j-vwsk5hz5mv8i0lj='
 SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'local-dev-only-not-a-real-secret')
 DEBUG = os.environ.get('DJANGO_DEBUG', '1') == '1'
 

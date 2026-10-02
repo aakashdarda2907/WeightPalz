@@ -1,23 +1,28 @@
 {% extends 'base.html' %}
-
 {% block title %}Sign up – WeightPalz{% endblock %}
+{% block nav %}{% endblock %}
+{% block footer %}{% endblock %}
 
 {% block content %}
-<div class="auth">
-  <h2>Create your account</h2>
-  <p class="mut">Takes under a minute.</p>
+<div class="auth-page">
+  <div class="auth-box">
+    <a class="logo auth-logo" href="{% url 'landing' %}">Weight<i>Palz</i></a>
+    <h2>Create your account</h2>
+    <p class="mut">Takes under a minute.</p>
 
-  <form method="post">
-    {% csrf_token %}
-    <input class="input" type="text" name="name" placeholder="Your name" aria-label="Your name"
-           value="{{ form_name|default:'' }}" autocomplete="given-name" required>
-    <input class="input" type="email" name="email" placeholder="Email" aria-label="Email"
-           value="{{ form_email|default:'' }}" autocomplete="email" required>
-    <input class="input" type="password" name="password" placeholder="Password (6+ characters)" aria-label="Password"
-           autocomplete="new-password" required>
-    <button class="btn block" type="submit">Sign up</button>
-  </form>
+    <form method="post">
+      {% csrf_token %}
+      <input class="input" type="text" name="name" placeholder="Your name" aria-label="Your name"
+             value="{{ form_name|default:'' }}" autocomplete="given-name" required>
+      <input class="input" type="email" name="email" placeholder="Email" aria-label="Email"
+             value="{{ form_email|default:'' }}" autocomplete="email" required>
+      <input class="input" type="password" name="password" placeholder="Password (6+ characters)" aria-label="Password"
+             autocomplete="new-password" required>
+      <button class="btn block" type="submit">Sign up</button>
+    </form>
 
-  <p class="mut center">Have an account? <a class="link" href="{% url 'login' %}">Log in</a></p>
+    <p class="mut center">Have an account? <a class="link" href="{% url 'login' %}">Log in</a></p>
+  </div>
+  <p class="fine">Not medical advice.</p>
 </div>
 {% endblock %}

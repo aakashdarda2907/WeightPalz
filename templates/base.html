@@ -11,7 +11,7 @@
   <link rel="stylesheet" href="{% static 'css/styles.css' %}">
 </head>
 <body>
-  {% include 'navbar.html' %}
+  {% block nav %}{% include 'navbar.html' %}{% endblock %}
 
   {% if messages %}
     <div class="toasts" role="status">
@@ -25,7 +25,7 @@
     {% block content %}{% endblock %}
   </main>
 
-  {% include 'footer.html' %}
+  {% block footer %}{% include 'footer.html' %}{% endblock %}
 
   {% block scripts %}{% endblock %}
 </body>

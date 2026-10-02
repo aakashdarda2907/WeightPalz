@@ -226,3 +226,93 @@ h3 { font-size: 16px; font-weight: 600; }
 .streak svg { width: 16px; height: 16px; fill: var(--y); }
 .sm.static { background: none; color: var(--mut); padding-right: 0; }
 .chart-empty { color: var(--mut); padding: 24px 0; text-align: center; }
+
+/* ==========================================================================
+   Polish pass
+   ========================================================================== */
+
+/* ---------- Slim footer and nav ---------- */
+.footer { padding: 22px 20px calc(28px + env(safe-area-inset-bottom, 0px)); gap: 2px; border-top: 1px solid var(--card2); margin-top: 24px; }
+.footer .logo { font-size: 15px; }
+.footer .mut { font-size: 12px; }
+.nav .btn { padding: 9px 16px; font-size: 14px; }
+
+/* ---------- Auth screens ---------- */
+.auth-page {
+  min-height: 100vh; display: grid; place-content: center; justify-items: center; gap: 14px;
+  padding: 24px 18px;
+  background: radial-gradient(70% 40% at 50% 0%, rgba(53, 240, 180, .16), transparent 70%);
+}
+.auth-box {
+  width: min(100%, 400px); background: var(--card); border-radius: 28px; padding: 28px 22px 22px;
+}
+.auth-logo { display: block; margin-bottom: 22px; font-size: 22px; }
+.auth-box .input { background: var(--card2); }
+.auth-box .center { margin-top: 16px; }
+.fine { font-size: 12px; color: var(--mut); }
+
+/* ---------- Bento (landing) ---------- */
+.bento { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-top: 18px; }
+.bx { border-radius: 24px; padding: 20px; display: flex; flex-direction: column; gap: 8px; min-height: 150px; }
+.bx h3 { font-size: 17px; }
+.bx p { font-size: 13px; }
+.b-wide { grid-column: span 2; }
+.b-card { background: var(--card); }
+.b-green { background: var(--g); color: var(--on); }
+.b-yellow { background: var(--y); color: #2a1f00; justify-content: space-between; }
+.b-blue { background: var(--b); color: #fff; }
+.b-coral { background: var(--r); color: #fff; justify-content: space-between; }
+.center-col { align-items: center; text-align: center; justify-content: center; }
+.bignum { font-size: 64px; font-weight: 800; letter-spacing: -.04em; line-height: 1; }
+
+.mini4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: auto; }
+.mini4 i { background: rgba(0, 0, 0, .16); border-radius: 14px; padding: 12px 0; text-align: center; font-style: normal; font-weight: 800; }
+
+.avs { display: flex; margin: 4px 0; }
+.avs i {
+  width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center; font-style: normal;
+  font-size: 12px; font-weight: 800; background: #fff; color: #10161d; border: 2px solid var(--b); margin-right: -8px;
+}
+.bars { display: flex; align-items: flex-end; gap: 6px; height: 56px; }
+.bars i { flex: 1; background: rgba(255, 255, 255, .85); border-radius: 6px 6px 3px 3px; }
+
+@media (min-width: 760px) {
+  .bento { grid-template-columns: repeat(4, 1fr); }
+  .b-wide { grid-column: span 2; }
+  .b-tall { grid-row: span 2; }
+}
+
+/* ---------- Progress ring ---------- */
+.ring { position: relative; width: 104px; height: 104px; flex: none; }
+.ring svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+.ring circle { fill: none; stroke-width: 10; stroke-linecap: round; }
+.ring .track { stroke: var(--card2); }
+.ring .prog { stroke: var(--g); transition: stroke-dasharray .6s ease; }
+.ring b { position: absolute; inset: 0; display: grid; place-items: center; font-size: 20px; font-weight: 800; }
+.ring.sm { width: 84px; height: 84px; margin-bottom: 6px; }
+.ring.sm b { font-size: 16px; }
+
+/* ---------- Home ---------- */
+.goal-card { display: flex; align-items: center; gap: 18px; margin-bottom: 8px; padding: 20px; }
+.goal-text .big small { font-size: 18px; color: var(--mut); font-weight: 600; }
+.motive { font-size: 13px; color: var(--mut); margin: 0 4px 14px; }
+
+.stats2 { margin-bottom: 20px; }
+.stat { border-radius: 20px; padding: 16px; }
+.stat p { font-size: 12px; opacity: .8; margin-bottom: 4px; }
+.stat b { font-size: 22px; font-weight: 800; letter-spacing: -.02em; }
+.s-green { background: var(--g); color: var(--on); }
+.s-card { background: var(--card); }
+
+.sect-head { display: flex; justify-content: space-between; align-items: center; margin: 4px 2px 2px; }
+.count { background: var(--card); border-radius: 99px; padding: 4px 12px; font-weight: 800; font-size: 13px; }
+
+.meal { box-shadow: inset 0 0 0 2px transparent; transition: box-shadow .2s; }
+.meal.yes { box-shadow: inset 0 0 0 2px var(--g); }
+.meal.no { box-shadow: inset 0 0 0 2px var(--r); }
+.meal-head { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; }
+.meal-head b { margin: 0; }
+.hint { display: block; font-size: 12px; color: var(--mut); }
+.mark { font-weight: 800; color: var(--mut); font-size: 16px; }
+.meal.yes .mark { color: var(--g); }
+.meal.no .mark { color: var(--r); }

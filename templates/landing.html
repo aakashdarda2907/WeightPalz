@@ -38,21 +38,53 @@
   </section>
 
   <section class="sec">
-    <div class="diff">
-      <h2>Consistency beats precision.</h2>
-      <p>Most people quit tracking because it gets tedious. WeightPalz asks for four taps and a weight. Calories are optional and never change your goals.</p>
+    <h2>Everything you need, nothing you don't</h2>
+    <div class="bento">
+
+      <div class="bx b-wide b-green">
+        <h3>Four taps. Done.</h3>
+        <p>Breakfast, lunch, snacks, dinner. Yes or no.</p>
+        <div class="mini4"><i>✓</i><i>✓</i><i>✓</i><i>✓</i></div>
+      </div>
+
+      <div class="bx b-tall b-card center-col">
+        <div class="ring sm" aria-hidden="true">
+          <svg viewBox="0 0 100 100"><circle class="track" cx="50" cy="50" r="42" pathLength="100"/><circle class="prog" cx="50" cy="50" r="42" pathLength="100" stroke-dasharray="68 100"/></svg>
+          <b>68%</b>
+        </div>
+        <h3>Weekly target</h3>
+        <p class="mut">One small goal each week, with progress you can see.</p>
+      </div>
+
+      <div class="bx b-yellow">
+        <div class="bignum">21</div>
+        <p>day streak. Missed a day? Welcome back.</p>
+      </div>
+
+      <div class="bx b-blue">
+        <h3>Friends</h3>
+        <div class="avs"><i>A</i><i>M</i><i>K</i><i>+3</i></div>
+        <p>See who has eaten today and cheer them on.</p>
+      </div>
+
+      <div class="bx b-card">
+        <h3>Calories</h3>
+        <p class="mut">Optional log. Never changes your goals.</p>
+      </div>
+
+      <div class="bx b-coral">
+        <h3>Stats</h3>
+        <div class="bars" aria-hidden="true"><i style="height:35%"></i><i style="height:55%"></i><i style="height:45%"></i><i style="height:75%"></i><i style="height:60%"></i><i style="height:90%"></i></div>
+        <p>Calendar and graphs.</p>
+      </div>
+
     </div>
   </section>
 
   <section class="sec">
-    <h2>Features</h2>
-    <div class="feats">
-      <div class="card"><h3>4-tap daily check-in</h3><p class="mut">One 2×2 grid. No searching food databases.</p></div>
-      <div class="card"><h3>Weekly target</h3><p class="mut">A small goal each week, with progress and encouragement.</p></div>
-      <div class="card"><h3>Friends and leaderboard</h3><p class="mut">Compete on streaks and meals completed, not on kilos.</p></div>
-      <div class="card"><h3>Stats calendar</h3><p class="mut">Weight and meals completed, day by day, plus graphs.</p></div>
-      <div class="card"><h3>Optional calorie log</h3><p class="mut">A separate tracker. Never mixed into any calculation.</p></div>
-      <div class="card"><h3>Gentle reminders</h3><p class="mut">A nudge to weigh in. Missed a day? Welcome back.</p></div>
+    <div class="diff">
+      <h2>Consistency beats precision.</h2>
+      <p>Most people quit tracking because it gets tedious. WeightPalz asks for four taps and a weight. Calories are optional and never change your goals.</p>
     </div>
   </section>
 
@@ -61,7 +93,6 @@
 
 {% block scripts %}
 <script>
-  // Hero demo: tap the tiles to try the check-in
   const tiles = document.querySelectorAll('.demo .tile');
   const count = document.getElementById('demo-count');
   tiles.forEach(function (tile) {

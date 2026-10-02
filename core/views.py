@@ -17,11 +17,11 @@ from .models import (
     MEAL_FIELDS, CalorieEntry, Cheer, Friendship, MealLog, Profile, WeightEntry,
 )
 
-MEAL_LABELS = {
-    'breakfast': 'Breakfast',
-    'lunch': 'Lunch',
-    'snacks': 'Evening snacks',
-    'dinner': 'Dinner',
+MEAL_HINTS = {
+    'breakfast': 'Morning',
+    'lunch': 'Midday',
+    'snacks': 'Evening',
+    'dinner': 'Night',
 }
 
 
@@ -171,7 +171,12 @@ def home_view(request):
 
     log = MealLog.objects.filter(user=me, date=today).first()
     meals = [
-        {'key': f, 'label': MEAL_LABELS[f], 'value': getattr(log, f) if log else None}
+        {
+            'key': f,
+            'label': MEAL_LABELS[f],
+            'hint': MEAL_HINTS[f],
+            'value': getattr(log, f) if log else None,
+        }
         for f in MEAL_FIELDS
     ]
     weight_today = WeightEntry.objects.filter(user=me, date=today).first()
@@ -190,6 +195,10 @@ def home_view(request):
     hour = timezone.localtime().hour
     greeting = 'Good morning' if hour < 12 else 'Good afternoon' if hour < 18 else 'Good evening'
 
+    current = weekly['current']
+    since_start = round(current - profile.start_weight, 1)
+    to_go = round(abs(profile.target_weight - current), 1)
+
     return render(request, 'home.html', {
         'active': 'home',
         'profile': profile,
@@ -201,8 +210,9 @@ def home_view(request):
         'yes_count': log.yes_count if log else 0,
         'weight_today': weight_today,
         'last_weight': profile.latest_weight(),
+        'since_start': since_start,
+        'to_go': to_go,
     })
-
 
 @profile_required
 @require_POST
