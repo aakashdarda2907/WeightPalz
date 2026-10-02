@@ -1,8 +1,9 @@
 """
 Django settings for WeightPalz.
 """
-
+import os
 from pathlib import Path
+
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -11,6 +12,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # ---------------------------------------------------------------------------
 # Keep the key Django generated for you in the original file.
 SECRET_KEY = 'django-insecure-+8htoxnja3=5v2c6b*lbhr&dm@)@cb(y1-f(--#568=&g(**6m'
+SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'local-dev-only-not-a-real-secret')
+DEBUG = os.environ.get('DJANGO_DEBUG', '1') == '1'
 
 # Set to False when you deploy on PythonAnywhere (stage three).
 DEBUG = True
@@ -18,9 +21,10 @@ DEBUG = True
 ALLOWED_HOSTS = [
     '127.0.0.1',
     'localhost',
-    # Stage three: add 'yourusername.pythonanywhere.com'
+    'weightpalz.pythonanywhere.com',
 ]
 
+CSRF_TRUSTED_ORIGINS = ['https://weightpalz.pythonanywhere.com']
 # ---------------------------------------------------------------------------
 # Applications
 # ---------------------------------------------------------------------------
