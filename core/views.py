@@ -16,6 +16,12 @@ from django.views.decorators.http import require_POST
 from .models import (
     MEAL_FIELDS, CalorieEntry, Cheer, Friendship, MealLog, Profile, WeightEntry,
 )
+MEAL_LABELS = {
+    'breakfast': 'Breakfast',
+    'lunch': 'Lunch',
+    'snacks': 'Evening snacks',
+    'dinner': 'Dinner',
+}
 
 MEAL_HINTS = {
     'breakfast': 'Morning',

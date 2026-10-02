@@ -13,7 +13,7 @@
         {% else %}
           <a class="btn" href="{% url 'signup' %}">Start free</a>
         {% endif %}
-        <a class="btn ghost" href="#how">See how it works</a>
+        <a class="btn ghost" href="#journey">See 3 months in</a>
       </div>
     </div>
 
@@ -56,26 +56,81 @@
         <p class="mut">One small goal each week, with progress you can see.</p>
       </div>
 
-      <div class="bx b-yellow">
-        <div class="bignum">21</div>
-        <p>day streak. Missed a day? Welcome back.</p>
+      <div class="bx b-card">
+        <div class="bignum y-num">21</div>
+        <p class="mut">day streak. Missed a day? Welcome back.</p>
       </div>
 
-      <div class="bx b-blue">
+      <div class="bx b-card">
         <h3>Friends</h3>
-        <div class="avs"><i>A</i><i>M</i><i>K</i><i>+3</i></div>
-        <p>See who has eaten today and cheer them on.</p>
+        <div class="avs"><i>A</i><i>M</i><i>K</i><i class="more">+3</i></div>
+        <p class="mut">See who has eaten today and cheer them on.</p>
       </div>
 
       <div class="bx b-card">
         <h3>Calories</h3>
-        <p class="mut">Optional log. Never changes your goals.</p>
+        <p class="mut">An optional log. It never changes your goals.</p>
       </div>
 
-      <div class="bx b-coral">
+      <div class="bx b-green b-stats">
         <h3>Stats</h3>
         <div class="bars" aria-hidden="true"><i style="height:35%"></i><i style="height:55%"></i><i style="height:45%"></i><i style="height:75%"></i><i style="height:60%"></i><i style="height:90%"></i></div>
-        <p>Calendar and graphs.</p>
+        <p>A calendar and graphs of your weight and meals.</p>
+      </div>
+
+    </div>
+  </section>
+
+  <section class="sec" id="journey">
+    <h2>Your first 3 months</h2>
+    <p class="mut sub">An example of what steady tracking can look like. Illustrative numbers, not a promise.</p>
+
+    <div class="jb">
+
+      <div class="jx j-chart">
+        <div class="jhead"><h3>Weight</h3><span class="tag">Example: gaining</span></div>
+        <svg id="jchart" viewBox="0 0 340 170" role="img" aria-label="Example weight rising steadily over 12 weeks"></svg>
+        <div class="legend"><span style="color:var(--g)">● 7-day average</span><span class="mut">● Daily weight</span><span class="mut">- - Goal</span></div>
+      </div>
+
+      <div class="jx j-heat">
+        <div class="jhead"><h3>Daily check-ins</h3><span class="tag">12 weeks</span></div>
+        <div id="heat" class="heat" role="img" aria-label="Heatmap of 84 daily check-ins, mostly full"></div>
+        <p class="mut">Each square is a day. Brighter means more meals done.</p>
+      </div>
+
+      <div class="jx j-green">
+        <p>Gained</p>
+        <b class="num">+6.0 kg</b>
+        <span class="subt">in 12 weeks</span>
+      </div>
+
+      <div class="jx">
+        <p>Best streak</p>
+        <b class="num y-num">41</b>
+        <span class="subt">days in a row</span>
+      </div>
+
+      <div class="jx j-ring">
+        <div class="ring sm" aria-hidden="true">
+          <svg viewBox="0 0 100 100"><circle class="track" cx="50" cy="50" r="42" pathLength="100"/><circle class="prog" cx="50" cy="50" r="42" pathLength="100" stroke-dasharray="93 100"/></svg>
+          <b>93%</b>
+        </div>
+        <span class="subt">312 of 336 meals</span>
+      </div>
+
+      <div class="jx">
+        <p>Cheers from friends</p>
+        <b class="num"><span class="g-txt">♥</span> 38</b>
+        <span class="subt">keeping you going</span>
+      </div>
+
+      <div class="jx j-board">
+        <div class="jhead"><h3>Friends this week</h3><span class="tag">meals done, max 28</span></div>
+        <div class="lb"><span class="rank">1</span><span class="av2">A</span><b class="nm">Aarav</b><div class="lbar"><i style="width:93%"></i></div><b>26</b></div>
+        <div class="lb me"><span class="rank">2</span><span class="av2 g">Y</span><b class="nm">You</b><div class="lbar"><i style="width:86%"></i></div><b>24</b></div>
+        <div class="lb"><span class="rank">3</span><span class="av2">M</span><b class="nm">Meera</b><div class="lbar"><i style="width:79%"></i></div><b>22</b></div>
+        <div class="lb"><span class="rank">4</span><span class="av2">K</span><b class="nm">Kabir</b><div class="lbar"><i style="width:68%"></i></div><b>19</b></div>
       </div>
 
     </div>
@@ -93,8 +148,10 @@
 
 {% block scripts %}
 <script>
-  const tiles = document.querySelectorAll('.demo .tile');
-  const count = document.getElementById('demo-count');
+(function () {
+  // Hero demo tiles
+  var tiles = document.querySelectorAll('.demo .tile');
+  var count = document.getElementById('demo-count');
   tiles.forEach(function (tile) {
     tile.addEventListener('click', function () {
       tile.classList.toggle('on');
@@ -102,5 +159,60 @@
       count.textContent = document.querySelectorAll('.demo .tile.on').length;
     });
   });
+
+  // Seeded random numbers so the example looks the same every visit
+  function rng(a) {
+    return function () {
+      a |= 0; a = a + 0x6D2B79F5 | 0;
+      var t = Math.imul(a ^ a >>> 15, 1 | a);
+      t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
+      return ((t ^ t >>> 14) >>> 0) / 4294967296;
+    };
+  }
+
+  // Heatmap: 12 weeks x 7 days, mostly full days
+  var r = rng(7), cells = '', i;
+  for (i = 0; i < 84; i++) {
+    var x = r(), lvl = x < .02 ? 0 : x < .05 ? 2 : x < .2 ? 3 : 4;
+    cells += '<i class="l' + lvl + '"></i>';
+  }
+  document.getElementById('heat').innerHTML = cells;
+
+  // Weight chart: 84 days from 62 kg to 68 kg
+  var r2 = rng(11), W = [], A = [];
+  for (i = 0; i < 84; i++) {
+    var t = i / 83;
+    W.push(62 + 6 * (0.9 * t + 0.1 * t * t) + (r2() - .5) * .9);
+  }
+  for (i = 0; i < 84; i++) {
+    var s = 0, n = 0;
+    for (var k = Math.max(0, i - 6); k <= i; k++) { s += W[k]; n++; }
+    A.push(s / n);
+  }
+  var lo = 61.4, hi = 68.8;
+  function X(j) { return 10 + j * 320 / 83; }
+  function Y(v) { return 140 - (v - lo) / (hi - lo) * 118; }
+
+  var line = '', dots = '';
+  for (i = 0; i < 84; i++) {
+    line += (i ? 'L' : 'M') + X(i).toFixed(1) + ' ' + Y(A[i]).toFixed(1);
+    dots += '<circle cx="' + X(i).toFixed(1) + '" cy="' + Y(W[i]).toFixed(1) + '" r="1.7" style="fill:var(--mut)" opacity=".55"/>';
+  }
+  var gy = Y(68).toFixed(1);
+  var svg =
+    '<defs><linearGradient id="gA" x1="0" y1="0" x2="0" y2="1">' +
+    '<stop offset="0" style="stop-color:var(--g);stop-opacity:.32"/>' +
+    '<stop offset="1" style="stop-color:var(--g);stop-opacity:0"/></linearGradient></defs>' +
+    '<line x1="10" x2="330" y1="' + gy + '" y2="' + gy + '" stroke-dasharray="4 4" stroke-width="1" style="stroke:var(--mut)"/>' +
+    '<text x="330" y="' + (gy - 6) + '" text-anchor="end">Goal 68 kg</text>' +
+    '<path d="' + line + 'L' + X(83).toFixed(1) + ' 140L10 140Z" style="fill:url(#gA)"/>' +
+    dots +
+    '<path d="' + line + '" fill="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="stroke:var(--g)"/>' +
+    '<text x="10" y="' + (Y(A[0]) - 10).toFixed(1) + '">62 kg</text>' +
+    '<text x="10" y="162">Week 1</text>' +
+    '<text x="170" y="162" text-anchor="middle">Week 6</text>' +
+    '<text x="330" y="162" text-anchor="end">Week 12</text>';
+  document.getElementById('jchart').innerHTML = svg;
+})();
 </script>
 {% endblock %}

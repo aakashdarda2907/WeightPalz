@@ -316,3 +316,95 @@ h3 { font-size: 16px; font-weight: 600; }
 .mark { font-weight: 800; color: var(--mut); font-size: 16px; }
 .meal.yes .mark { color: var(--g); }
 .meal.no .mark { color: var(--r); }
+
+/* ==========================================================================
+   Phone polish, back button, bento fixes, 3-month journey
+   ========================================================================== */
+
+/* ---------- Phone basics ---------- */
+html { -webkit-text-size-adjust: 100%; }
+body { -webkit-tap-highlight-color: transparent; overflow-x: hidden; }
+a, button { touch-action: manipulation; }
+.input { font-size: 16px; }              /* stops iPhone zooming in on focus */
+
+/* ---------- Wider layouts (use ~92-94% of a phone screen) ---------- */
+.wrap { padding: 0 clamp(14px, 4vw, 20px); }
+.nav { padding: 14px clamp(14px, 4vw, 20px); }
+.app {
+  width: 100%; max-width: 560px;
+  padding: 18px clamp(12px, 3.5vw, 22px) calc(104px + env(safe-area-inset-bottom, 0px));
+}
+.tabs { width: min(100%, 560px); }
+.auth-page { padding: 20px 14px; }
+.auth-box { width: min(100%, 420px); }
+.li .sm { padding: 7px 12px; }
+.cal { gap: 3px; }
+
+/* ---------- Back button ---------- */
+.auth-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 22px; }
+.auth-top .auth-logo { margin: 0; }
+.back {
+  display: inline-flex; align-items: center; gap: 4px; background: var(--card2);
+  padding: 8px 14px 8px 10px; border-radius: 99px; font-weight: 600; font-size: 13px;
+}
+
+/* ---------- Bento fixes (site colours only) ---------- */
+.b-card .avs i { background: var(--card2); color: var(--tx); border-color: var(--card); }
+.avs i.more { background: var(--g) !important; color: var(--on) !important; }
+.b-green .bars i { background: rgba(0, 0, 0, .22); }
+.b-card .bars i { background: var(--g); }
+.y-num { color: var(--y); }
+.g-txt { color: var(--g); }
+.b-stats { grid-column: span 2; }
+@media (min-width: 760px) { .b-stats { grid-column: span 1; } }
+
+/* ---------- 3-month journey ---------- */
+.sub { margin: 4px 0 0; }
+.jb { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-top: 16px; }
+.jx { background: var(--card); border-radius: 24px; padding: 18px; display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.jx p { font-size: 12px; color: var(--mut); }
+.jx .num { font-size: 32px; font-weight: 800; letter-spacing: -.03em; line-height: 1.1; margin-top: auto; }
+.jx .subt { font-size: 12px; color: var(--mut); }
+.jx svg text { fill: var(--mut); font-size: 10px; }
+.jx svg { width: 100%; height: auto; display: block; }
+.j-chart, .j-heat, .j-board { grid-column: span 2; }
+.j-green { background: var(--g); color: var(--on); }
+.j-green p, .j-green .subt { color: var(--on); opacity: .75; }
+.j-ring { align-items: center; justify-content: center; text-align: center; }
+.jhead { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-bottom: 4px; }
+.tag { background: var(--card2); color: var(--mut); font-size: 11px; font-weight: 600; padding: 4px 10px; border-radius: 99px; white-space: nowrap; }
+
+.heat {
+  display: grid; grid-template-columns: repeat(12, 1fr); grid-template-rows: repeat(7, auto);
+  grid-auto-flow: column; gap: 4px; margin: 6px 0;
+}
+.heat i { aspect-ratio: 1; border-radius: 5px; background: var(--card2); display: block; }
+.heat i.l2 { background: var(--g); opacity: .5; }
+.heat i.l3 { background: var(--g); opacity: .75; }
+.heat i.l4 { background: var(--g); }
+
+.lb { display: flex; align-items: center; gap: 10px; padding: 8px 0; }
+.lb .rank { width: 16px; text-align: center; }
+.lb .nm { width: 52px; font-size: 14px; }
+.lb .lbar { flex: 1; height: 8px; background: var(--card2); border-radius: 9px; overflow: hidden; }
+.lb .lbar i { display: block; height: 100%; background: var(--g); border-radius: 9px; opacity: .55; }
+.lb.me .lbar i { opacity: 1; }
+.lb.me .nm { color: var(--g); }
+.av2 { width: 30px; height: 30px; border-radius: 50%; background: var(--card2); display: grid; place-items: center; font-size: 12px; font-weight: 800; flex: none; }
+.av2.g { background: var(--g); color: var(--on); }
+
+@media (min-width: 760px) {
+  .jb { grid-template-columns: repeat(4, 1fr); }
+  .j-chart, .j-heat { grid-column: span 2; }
+  .j-board { grid-column: span 4; }
+}
+
+/* ---------- Very small phones ---------- */
+@media (max-width: 360px) {
+  h1 { font-size: 31px; }
+  .goal-card { gap: 12px; padding: 16px; }
+  .ring { width: 88px; height: 88px; }
+  .big { font-size: 38px; }
+  .bignum { font-size: 52px; }
+  .jx .num { font-size: 26px; }
+}
