@@ -408,3 +408,38 @@ a, button { touch-action: manipulation; }
   .bignum { font-size: 52px; }
   .jx .num { font-size: 26px; }
 }
+
+/* ==========================================================================
+   Motion: page transitions and press feedback
+   ========================================================================== */
+
+/* Smooth crossfade between pages (Chrome, Edge, Safari 18.2+).
+   The bottom nav stays in place while the content fades. */
+@view-transition { navigation: auto; }
+.tabs { view-transition-name: tabbar; }
+::view-transition-old(root) { animation: .16s ease both vt-out; }
+::view-transition-new(root) { animation: .26s ease both vt-in; }
+@keyframes vt-out { to { opacity: 0; } }
+@keyframes vt-in { from { opacity: 0; transform: translateY(8px); } }
+
+/* Browsers without view transitions get a simple fade-in instead */
+@supports not (view-transition-name: none) {
+  main { animation: vt-in .28s ease both; }
+}
+
+/* Press feedback */
+.btn, .sm, .chip, .tile, .yn button, .tabs a {
+  transition: transform .12s ease, background-color .2s ease, color .2s ease;
+}
+.btn:active, .sm:active, .chip:active, .tile:active, .yn button:active { transform: scale(.96); }
+.tabs a:active { transform: scale(.9); }
+
+/* A small pop when a meal card changes */
+@keyframes pop { 50% { transform: scale(1.03); } }
+.meal.pop { animation: pop .28s ease; }
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*), ::view-transition-old(*), ::view-transition-new(*) { animation: none !important; }
+  .meal.pop, main { animation: none !important; }
+  * { transition-duration: .01ms !important; }
+}

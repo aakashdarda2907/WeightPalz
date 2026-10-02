@@ -16,6 +16,7 @@ from django.views.decorators.http import require_POST
 from .models import (
     MEAL_FIELDS, CalorieEntry, Cheer, Friendship, MealLog, Profile, WeightEntry,
 )
+from django.http import JsonResponse
 MEAL_LABELS = {
     'breakfast': 'Breakfast',
     'lunch': 'Lunch',
@@ -30,7 +31,18 @@ MEAL_HINTS = {
     'dinner': 'Night',
 }
 
+def _is_ajax(request):
+    return request.headers.get('X-Requested-With') == 'fetch'
 
+
+def _motivation(weekly, streak):
+    if weekly['progress'] >= 100:
+        return 'Target hit. Great week!'
+    if weekly['progress'] > 50:
+        return 'More than halfway. Keep going.'
+    if streak > 2:
+        return f'{streak} days in a row. Nice rhythm.'
+    return 'Small steps count. Show up today.'
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
@@ -188,6 +200,7 @@ def home_view(request):
     weight_today = WeightEntry.objects.filter(user=me, date=today).first()
     weekly = profile.weekly_target()
     streak = profile.streak()
+    motivation = _motivation(weekly, streak)
 
     if weekly['progress'] >= 100:
         motivation = 'Target hit. Great week!'
@@ -219,16 +232,27 @@ def home_view(request):
         'since_start': since_start,
         'to_go': to_go,
     })
-
 @profile_required
 @require_POST
 def save_meal(request):
     meal = request.POST.get('meal')
     answer = request.POST.get('answer')
-    if meal in MEAL_FIELDS and answer in ('yes', 'no'):
+    valid = meal in MEAL_FIELDS and answer in ('yes', 'no')
+
+    log = None
+    if valid:
         log, _ = MealLog.objects.get_or_create(user=request.user, date=timezone.localdate())
         setattr(log, meal, answer == 'yes')
         log.save()
+
+    if _is_ajax(request):
+        if not valid:
+            return JsonResponse({'ok': False}, status=400)
+        return JsonResponse({
+            'ok': True,
+            'yes_count': log.yes_count,
+            'streak': request.user.profile.streak(),
+        })
     return redirect('home')
 
 
@@ -237,13 +261,53 @@ def save_meal(request):
 def save_weight(request):
     weight = _num(request.POST.get('weight'))
     if weight is None:
+        if _is_ajax(request):
+            return JsonResponse({'ok': False, 'message': 'Enter a valid weight in kg.'}, status=400)
         messages.error(request, 'Enter a valid weight in kg.')
-    else:
-        WeightEntry.objects.update_or_create(
-            user=request.user, date=timezone.localdate(), defaults={'weight': weight},
-        )
-        messages.success(request, 'Weight saved.')
+        return redirect('home')
+
+    WeightEntry.objects.update_or_create(
+        user=request.user, date=timezone.localdate(), defaults={'weight': weight},
+    )
+
+    if _is_ajax(request):
+        profile = request.user.profile
+        weekly = profile.weekly_target()
+        streak = profile.streak()
+        return JsonResponse({
+            'ok': True,
+            'message': 'Weight saved.',
+            'progress': weekly['progress'],
+            'target': weekly['target'],
+            'current': weekly['current'],
+            'since_start': round(weekly['current'] - profile.start_weight, 1),
+            'to_go': round(abs(profile.target_weight - weekly['current']), 1),
+            'streak': streak,
+            'motivation': _motivation(weekly, streak),
+        })
+
+    messages.success(request, 'Weight saved.')
     return redirect('home')
+
+
+@profile_required
+@require_POST
+def cheer_friend(request, user_id):
+    other = get_object_or_404(User, id=user_id)
+    friendship = Friendship.between(request.user, other)
+    is_friend = friendship is not None and friendship.status == 'accepted'
+
+    if is_friend:
+        _, created = Cheer.objects.get_or_create(
+            from_user=request.user, to_user=other, date=timezone.localdate(),
+        )
+        if _is_ajax(request):
+            return JsonResponse({'ok': True, 'message': f'You cheered {_name(other)}.'})
+        if created:
+            messages.success(request, f'You cheered {_name(other)}.')
+    elif _is_ajax(request):
+        return JsonResponse({'ok': False}, status=400)
+    return redirect('friends')
 
 
 # ---------------------------------------------------------------------------

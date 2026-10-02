@@ -70,7 +70,7 @@
             <p class="mut">{{ f.streak }} day streak · {{ f.done }}/4 today</p>
             <div class="dots lg left">{% for on in f.dots %}<i class="{% if on %}on{% endif %}"></i>{% endfor %}</div>
           </div>
-          <form method="post" action="{% url 'cheer_friend' f.user.id %}">
+                    <form method="post" action="{% url 'cheer_friend' f.user.id %}" data-ajax="cheer">
             {% csrf_token %}
             {% if f.cheered %}
               <button class="sm on" type="button" disabled>Cheered ✓</button>
