@@ -51,7 +51,10 @@
     <h3>Today's check-in</h3>
     <span class="count" id="yes-count">{{ yes_count }}/4</span>
   </div>
-  <p class="q">{{ profile.meal_question }}</p>
+    <div class="qbox">
+    <p class="qmain">{{ profile.meal_question }}</p>
+    <p class="qsub">Compare each meal with the same meal yesterday, then tap Yes or No.</p>
+  </div>
 
   <div class="grid2 meals">
     {% for m in meals %}
@@ -83,6 +86,6 @@
       <button class="btn" id="weight-btn" type="submit">{% if weight_today %}Update{% else %}Save{% endif %}</button>
     </form>
   </div>
-
+  {% include 'install_card.html' %}
 </div>
 {% endblock %}

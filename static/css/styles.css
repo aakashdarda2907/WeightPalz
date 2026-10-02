@@ -443,3 +443,78 @@ a, button { touch-action: manipulation; }
   .meal.pop, main { animation: none !important; }
   * { transition-duration: .01ms !important; }
 }
+
+/* ---------- Check-in question and install card ---------- */
+[hidden] { display: none !important; }
+
+.qbox { background: var(--card); border-radius: 18px; padding: 14px 16px; margin: 6px 0 12px; border-left: 4px solid var(--g); }
+.qmain { font-weight: 600; font-size: 16px; line-height: 1.3; }
+.qsub { font-size: 12px; color: var(--mut); margin-top: 4px; }
+
+.install-row { display: flex; align-items: center; gap: 12px; }
+.install-row .g { flex: 1; min-width: 0; }
+.install-icon { width: 48px; height: 48px; border-radius: 12px; flex: none; }
+.install .btn.block { margin-top: 12px; }
+.install [data-install-ios] { margin-top: 10px; }
+
+/* ==========================================================================
+   Install banner, steps sheet, Profile instructions, bento colours
+   ========================================================================== */
+
+/* ---------- Install banner ---------- */
+.no-ib .ibanner { display: none; }
+.ibanner {
+  max-width: 560px; width: calc(100% - 24px); margin: 10px auto 0;
+  background: var(--card); border: 1px solid var(--card2); border-left: 4px solid var(--g);
+  border-radius: 20px; padding: 12px 14px;
+}
+.ib-row { display: flex; align-items: center; gap: 12px; }
+.ib-row img { width: 40px; height: 40px; border-radius: 10px; flex: none; }
+.ib-text { display: grid; line-height: 1.3; }
+.ib-text b { font-size: 14px; }
+.ib-text span { font-size: 12px; color: var(--mut); }
+.ib-actions { display: flex; align-items: center; gap: 6px; margin-top: 10px; flex-wrap: wrap; }
+.ib-actions .btn { padding: 9px 18px; font-size: 14px; }
+.ib-link {
+  background: none; color: var(--mut); font-weight: 600; font-size: 13px; padding: 8px 10px;
+  text-decoration: underline; text-underline-offset: 3px;
+}
+
+/* ---------- Steps sheet ---------- */
+.sheet { position: fixed; inset: 0; z-index: 30; display: flex; align-items: flex-end; justify-content: center; }
+.sheet-bg { position: absolute; inset: 0; background: rgba(0, 0, 0, .6); }
+.sheet-card {
+  position: relative; width: min(100%, 520px); max-height: 88vh; overflow: auto;
+  background: var(--card); border-radius: 28px 28px 0 0;
+  padding: 20px 18px calc(20px + env(safe-area-inset-bottom, 0px));
+  animation: sheet-up .25s ease;
+}
+@keyframes sheet-up { from { transform: translateY(40px); opacity: 0; } }
+.sheet-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
+@media (prefers-reduced-motion: reduce) { .sheet-card { animation: none; } }
+
+/* ---------- Numbered steps (sheet and Profile) ---------- */
+.steps-list { list-style: none; padding: 0; margin: 12px 0 4px; display: grid; gap: 8px; counter-reset: s; }
+.steps-list li {
+  counter-increment: s; display: flex; gap: 12px; align-items: flex-start;
+  background: var(--card2); border-radius: 16px; padding: 12px 14px; font-size: 14px;
+}
+.steps-list li::before {
+  content: counter(s); flex: none; width: 24px; height: 24px; border-radius: 50%;
+  background: var(--g); color: var(--on); display: grid; place-items: center; font-weight: 800; font-size: 12px;
+}
+
+/* ---------- Profile: install instructions ---------- */
+.install-help .ok { color: var(--g); font-weight: 600; margin-top: 10px; }
+.install-help details { background: var(--card2); border-radius: 16px; padding: 12px 14px; margin-top: 10px; }
+.install-help summary { font-weight: 600; cursor: pointer; list-style: none; display: flex; justify-content: space-between; }
+.install-help summary::-webkit-details-marker { display: none; }
+.install-help summary::after { content: '+'; color: var(--mut); }
+.install-help details[open] summary::after { content: '–'; }
+.install-help details .steps-list li { background: var(--card); }
+.install-help .link { display: block; margin: 12px auto 0; font-size: 13px; }
+
+/* ---------- Bento: bring back the colour ---------- */
+.b-blue .avs i { background: #fff; color: #10161d; border-color: var(--b); }
+.b-blue .avs i.more { background: #10161d !important; color: #fff !important; }
+.b-coral .bars i { background: rgba(255, 255, 255, .88); }

@@ -12,6 +12,8 @@ from django.db.models import Q, Sum
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
 from django.views.decorators.http import require_POST
+from django.http import HttpResponse, JsonResponse
+from django.templatetags.static import static
 
 from .models import (
     MEAL_FIELDS, CalorieEntry, Cheer, Friendship, MealLog, Profile, WeightEntry,
@@ -521,19 +523,6 @@ def remove_friend(request, user_id):
     return redirect('friends')
 
 
-@profile_required
-@require_POST
-def cheer_friend(request, user_id):
-    other = get_object_or_404(User, id=user_id)
-    friendship = Friendship.between(request.user, other)
-    if friendship and friendship.status == 'accepted':
-        _, created = Cheer.objects.get_or_create(
-            from_user=request.user, to_user=other, date=timezone.localdate(),
-        )
-        if created:
-            messages.success(request, f'You cheered {_name(other)}.')
-    return redirect('friends')
-
 
 # ---------------------------------------------------------------------------
 # Calories (fully independent tracker)
@@ -617,3 +606,84 @@ def profile_view(request):
         'profile': profile,
         'reminder_value': profile.reminder_time.strftime('%H:%M'),
     })
+
+# ---------------------------------------------------------------------------
+# Install as app (PWA)
+# ---------------------------------------------------------------------------
+def manifest_view(request):
+    data = {
+        'id': '/',
+        'name': 'WeightPalz',
+        'short_name': 'WeightPalz',
+        'description': 'Four taps a day. Build the habit of gaining or losing weight.',
+        'start_url': '/home/',
+        'scope': '/',
+        'display': 'standalone',
+        'orientation': 'portrait',
+        'background_color': '#0c0f13',
+        'theme_color': '#0c0f13',
+        'categories': ['health', 'fitness', 'lifestyle'],
+        'icons': [
+            {'src': static('icons/icon-192.png'), 'sizes': '192x192', 'type': 'image/png', 'purpose': 'any'},
+            {'src': static('icons/icon-512.png'), 'sizes': '512x512', 'type': 'image/png', 'purpose': 'any'},
+            {'src': static('icons/icon-maskable-512.png'), 'sizes': '512x512', 'type': 'image/png', 'purpose': 'maskable'},
+        ],
+    }
+    return JsonResponse(data, content_type='application/manifest+json')
+
+
+SERVICE_WORKER_JS = """
+const CACHE = 'weightpalz-v1';
+const OFFLINE_HTML = '<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">' +
+  '<title>Offline</title><body style="margin:0;min-height:100vh;display:grid;place-content:center;gap:12px;text-align:center;' +
+  'background:#0c0f13;color:#f4f7fa;font-family:system-ui,sans-serif;padding:24px">' +
+  '<h2>You are offline</h2><p style="color:#8b96a5">Connect to the internet to log your check-in.</p>' +
+  '<button onclick="location.reload()" style="background:#35f0b4;color:#05140e;border:0;border-radius:99px;padding:13px 22px;font-weight:600">Try again</button>';
+
+self.addEventListener('install', function () { self.skipWaiting(); });
+
+self.addEventListener('activate', function (e) {
+  e.waitUntil(
+    caches.keys()
+      .then(function (keys) {
+        return Promise.all(keys.filter(function (k) { return k !== CACHE; }).map(function (k) { return caches.delete(k); }));
+      })
+      .then(function () { return self.clients.claim(); })
+  );
+});
+
+self.addEventListener('fetch', function (e) {
+  var req = e.request;
+  if (req.method !== 'GET') return;
+  var url = new URL(req.url);
+  if (url.origin !== location.origin) return;
+
+  // Static files: network first, cached copy if the network is down
+  if (url.pathname.indexOf('/static/') === 0) {
+    e.respondWith(
+      fetch(req).then(function (res) {
+        if (res.ok) { var copy = res.clone(); caches.open(CACHE).then(function (c) { c.put(req, copy); }); }
+        return res;
+      }).catch(function () { return caches.match(req); })
+    );
+    return;
+  }
+
+  // Pages: always from the server, friendly message if offline
+  if (req.mode === 'navigate') {
+    e.respondWith(
+      fetch(req).catch(function () {
+        return new Response(OFFLINE_HTML, { headers: { 'Content-Type': 'text/html; charset=utf-8' } });
+      })
+    );
+  }
+});
+"""
+
+
+def service_worker_view(request):
+    # Served from the site root so it can control every page.
+    response = HttpResponse(SERVICE_WORKER_JS, content_type='application/javascript')
+    response['Service-Worker-Allowed'] = '/'
+    response['Cache-Control'] = 'no-cache'
+    return response

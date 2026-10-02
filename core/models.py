@@ -33,8 +33,8 @@ class Profile(models.Model):
     @property
     def meal_question(self):
         if self.goal == 'gain':
-            return 'Did you eat more than yesterday?'
-        return 'Did you stick to your plan?'
+            return 'Did you eat a little more than yesterday?'
+        return 'Did you eat a little less than yesterday?'
 
     def latest_weight(self):
         entry = self.user.weight_entries.first()  # ordered newest first

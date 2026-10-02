@@ -1,0 +1,15 @@
+{% load static %}
+<div class="card install" data-install-card hidden {% if dismissible %}data-dismissible{% endif %}>
+  <div class="install-row">
+    <img class="install-icon" src="{% static 'icons/icon-192.png' %}" alt="" width="48" height="48">
+    <div class="g">
+      <h3>Install WeightPalz</h3>
+      <p class="mut">Add it to your home screen for one-tap check-ins.</p>
+    </div>
+    {% if dismissible %}
+      <button class="sm" type="button" data-install-dismiss aria-label="Not now">✕</button>
+    {% endif %}
+  </div>
+  <button class="btn block" type="button" data-install-btn hidden>Install app</button>
+  <p class="mut" data-install-ios hidden>On iPhone: tap the Share button in Safari, then choose Add to Home Screen.</p>
+</div>

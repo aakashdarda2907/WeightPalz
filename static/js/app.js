@@ -110,3 +110,198 @@
     });
   });
 })();
+// ---------------------------------------------------------------------------
+// Install as app: banner, steps sheet, native install prompt
+// ---------------------------------------------------------------------------
+(function () {
+  'use strict';
+
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', function () {
+      navigator.serviceWorker.register('/sw.js', { scope: '/' }).catch(function () {});
+    });
+  }
+
+  var FLAG = 'wp-installed';
+  var banner = document.getElementById('install-banner');
+  var sheet = document.getElementById('install-sheet');
+  var deferred = null;
+  var standalone = (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) ||
+                   window.navigator.standalone === true;
+
+  function installed() {
+    try { return localStorage.getItem(FLAG) === '1'; } catch (e) { return false; }
+  }
+  function setInstalled(v) {
+    try {
+      if (v) localStorage.setItem(FLAG, '1'); else localStorage.removeItem(FLAG);
+    } catch (e) {}
+  }
+  if (standalone) setInstalled(true);
+
+  function refresh() {
+    if (banner) banner.hidden = standalone || installed();
+    document.querySelectorAll('[data-if-standalone]').forEach(function (el) { el.hidden = !standalone; });
+    document.querySelectorAll('[data-if-browser]').forEach(function (el) { el.hidden = standalone; });
+  }
+
+  // ----- Work out which device and browser this is -----
+  function detect() {
+    var ua = navigator.userAgent || '';
+    var ios = /iphone|ipad|ipod/i.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+    var safari = /safari/i.test(ua) && !/chrome|crios|fxios|edgios|android|opr|edg/i.test(ua);
+    if (ios) return safari ? 'ios-safari' : 'ios-other';
+    if (/android/i.test(ua)) {
+      if (/samsungbrowser/i.test(ua)) return 'samsung';
+      if (/firefox/i.test(ua)) return 'android-firefox';
+      return 'android-chrome';
+    }
+    if (safari) return 'mac-safari';
+    if (/firefox/i.test(ua)) return 'desktop-firefox';
+    return 'desktop-chromium';
+  }
+
+  var INFO = {
+    'ios-safari': {
+      label: 'iPhone or iPad · Safari',
+      steps: [
+        'Tap the <b>Share</b> button (the square with an arrow) at the bottom of Safari.',
+        'Scroll down and tap <b>Add to Home Screen</b>.',
+        'Tap <b>Add</b> in the top right corner.',
+        'Open WeightPalz from your home screen.'
+      ]
+    },
+    'ios-other': {
+      label: 'iPhone or iPad · this browser',
+      steps: [
+        'Installing works best in <b>Safari</b>. Open this page in Safari first.',
+        'Tap the <b>Share</b> button, then <b>Add to Home Screen</b>.',
+        'Tap <b>Add</b> in the top right corner.'
+      ]
+    },
+    'samsung': {
+      label: 'Samsung Internet',
+      steps: [
+        'Tap the <b>menu</b> button (three lines) at the bottom right.',
+        'Tap <b>Add page to</b>, then <b>Home screen</b>.',
+        'Tap <b>Add</b> to confirm.'
+      ]
+    },
+    'android-chrome': {
+      label: 'Android · Chrome',
+      steps: [
+        'Tap the <b>menu</b> button (three dots) at the top right.',
+        'Tap <b>Install app</b> or <b>Add to Home screen</b>.',
+        'Tap <b>Install</b> to confirm.'
+      ]
+    },
+    'android-firefox': {
+      label: 'Android · Firefox',
+      steps: [
+        'Tap the <b>menu</b> button (three dots).',
+        'Tap <b>Install</b>.',
+        'Tap <b>Add</b> to confirm.'
+      ]
+    },
+    'mac-safari': {
+      label: 'Mac · Safari',
+      steps: [
+        'In the menu bar, choose <b>File</b>, then <b>Add to Dock</b>.',
+        'Click <b>Add</b>.'
+      ]
+    },
+    'desktop-chromium': {
+      label: 'Computer · Chrome or Edge',
+      steps: [
+        'Click the <b>install icon</b> at the right end of the address bar.',
+        'Click <b>Install</b>.',
+        'No icon? Open the browser menu and choose <b>Install WeightPalz</b>.'
+      ]
+    },
+    'desktop-firefox': {
+      label: 'Computer · Firefox',
+      steps: [
+        'Firefox cannot install web apps on computers.',
+        'Open this site in <b>Chrome</b> or <b>Edge</b> to install it.'
+      ]
+    }
+  };
+
+  // ----- Steps sheet -----
+  function openSheet() {
+    if (!sheet) return;
+    var info = INFO[detect()];
+    document.getElementById('sheet-device').textContent = info.label;
+    document.getElementById('sheet-steps').innerHTML =
+      info.steps.map(function (s) { return '<li><span>' + s + '</span></li>'; }).join('');
+    sheet.hidden = false;
+    document.body.style.overflow = 'hidden';
+    var close = sheet.querySelector('.sheet-head [data-sheet-close]');
+    if (close) close.focus();
+  }
+
+  function closeSheet() {
+    if (!sheet) return;
+    sheet.hidden = true;
+    document.body.style.overflow = '';
+  }
+
+  // ----- Install: use the browser's own dialog when we can, otherwise show steps -----
+  function startInstall() {
+    if (deferred) {
+      var d = deferred;
+      deferred = null;
+      d.prompt();
+      d.userChoice.then(function (choice) {
+        if (choice.outcome === 'accepted') { setInstalled(true); refresh(); }
+      });
+      return;
+    }
+    openSheet();
+  }
+
+  window.addEventListener('beforeinstallprompt', function (e) {
+    e.preventDefault();
+    deferred = e;
+  });
+
+  window.addEventListener('appinstalled', function () {
+    deferred = null;
+    setInstalled(true);
+    closeSheet();
+    refresh();
+  });
+
+  document.addEventListener('click', function (e) {
+    if (e.target.closest('[data-install-open]')) { startInstall(); return; }
+
+    if (e.target.closest('[data-install-done]')) {
+      setInstalled(true);
+      closeSheet();
+      refresh();
+      return;
+    }
+
+    if (e.target.closest('[data-sheet-close]')) { closeSheet(); return; }
+
+    var reset = e.target.closest('[data-install-reset]');
+    if (reset) {
+      setInstalled(false);
+      document.documentElement.classList.remove('no-ib');
+      refresh();
+      reset.textContent = 'The banner will show again ✓';
+    }
+  });
+
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') closeSheet();
+  });
+
+  // Open the Profile instructions that match this device
+  var me = detect();
+  document.querySelectorAll('details[data-platform]').forEach(function (d) {
+    if (d.dataset.platform.split(' ').indexOf(me) !== -1) d.open = true;
+  });
+
+  refresh();
+})();

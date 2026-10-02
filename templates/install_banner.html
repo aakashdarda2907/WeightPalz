@@ -1,0 +1,28 @@
+{% load static %}
+<div class="ibanner" id="install-banner" role="region" aria-label="Install app">
+  <div class="ib-row">
+    <img src="{% static 'icons/icon-192.png' %}" alt="" width="40" height="40">
+    <div class="ib-text">
+      <b>Install WeightPalz</b>
+      <span>Open it like an app, one tap from your home screen.</span>
+    </div>
+  </div>
+  <div class="ib-actions">
+    <button class="btn" type="button" data-install-open>Install app</button>
+    <button class="ib-link" type="button" data-install-done>I've already installed</button>
+  </div>
+</div>
+
+<div class="sheet" id="install-sheet" hidden role="dialog" aria-modal="true" aria-labelledby="sheet-title">
+  <div class="sheet-bg" data-sheet-close></div>
+  <div class="sheet-card">
+    <div class="sheet-head">
+      <h3 id="sheet-title">Install WeightPalz</h3>
+      <button class="sm" type="button" data-sheet-close aria-label="Close">✕</button>
+    </div>
+    <p class="mut" id="sheet-device"></p>
+    <ol class="steps-list" id="sheet-steps"></ol>
+    <button class="btn block" type="button" data-install-done>I've installed it</button>
+    <button class="btn ghost block" type="button" data-sheet-close>Close</button>
+  </div>
+</div>
